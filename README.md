@@ -1,6 +1,6 @@
-#Projet d'introduction à la vérification
+# Projet d'introduction à la vérification
 
-##Exercice 1.1 (Le berger)
+## Exercice 1.1 (Le berger)
 
 Nous poursuivons l’exercice portant sur le berger, le loup, le mouton et le chou. Nous sou-
 haitons générer automatiquement à l’aide de SPIN la solution la plus courte permettant au
@@ -21,7 +21,7 @@ Pensez à tester votre modèle au fur et à mesure à l’aide de simulations ! 
 affichés dans les MSC, vous pouvez en insérer pour ajouter des commentaires sur les actions
 réalisées par le berger...
 
-##Exercice 1.2 (Le jeu de solitaire)
+## Exercice 1.2 (Le jeu de solitaire)
 
 Vous connaissez sûrement le jeu de solitaire (allez voir sur Wikipedia sinon), mais connaissez-
 vous la stratégie permettant de gagner ?
