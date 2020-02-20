@@ -2,8 +2,8 @@
 
 ## Exercice 1.1 (Le berger)
 
-Nous poursuivons l’exercice portant sur le berger, le loup, le mouton et le chou. Nous sou-
-haitons générer automatiquement à l’aide de SPIN la solution la plus courte permettant au
+Nous poursuivons l’exercice portant sur le berger, le loup, le mouton et le chou. Nous souhaitons
+générer automatiquement à l’aide de SPIN la solution la plus courte permettant au
 berger de traverser la rivière sans danger.
 
 Le fichier berger.pml obtenu au précédent TP vous est fourni. Il propose une modélisation
