@@ -23,9 +23,9 @@ proctype prepare_game()
         printf("Value = %d\n",line[line_cpt].column[column_cpt]);
         column_cpt = column_cpt+1;
     :: (column_cpt>=7 && line_cpt<7) -> column_cpt = 0; line_cpt = line_cpt+1; printf("RESET COLUMN\n")
-    :: (column_cpt>=7 && line_cpt==6) -> atomic{game_ready!1 ; goto preparation_completed;}
+    :: (line_cpt>=7) -> atomic{game_ready!1 ; goto preparation_completed;}
   od
-  preparation_completed : skip;
+  preparation_completed : printf("BOARD READY\n");
 }
 
 init
