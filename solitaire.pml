@@ -94,7 +94,7 @@ proctype setup_cases()
   :: board_ready?1 ->
     atomic {
     do
-      :: (line_cpt<7 && column_cpt<7) -> atomic{run case(line_cpt,column_cpt); column_cpt = column_cpt+1;}
+      :: (line_cpt<7 && column_cpt<7 && line[line_cpt].column[column_cpt] != 2) -> atomic{run case(line_cpt,column_cpt); column_cpt = column_cpt+1;}
       :: (column_cpt>=7 && line_cpt<7) -> column_cpt = 0; line_cpt = line_cpt+1;
       :: (line_cpt>=7) -> goto setup_completed;
     od
