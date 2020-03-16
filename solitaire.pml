@@ -41,14 +41,16 @@ proctype prepare_game()
   preparation_completed : atomic{line[2].column[3] = 0; printf("BOARD READY\n");}
 };
 
-proctype playable_case(byte line_pos, byte column_pos){
+proctype playable_case(byte line_pos; byte column_pos){
   if
   :: (line_pos-2 >= 0 && line[line_pos].column[column_pos] == 1 && line[line_pos-1].column[column_pos] == 1 && line[line_pos-2].column[column_pos] == 0);
       atomic{
         Move ok_move; Position source; Position jumped; Position destination;
-        source.line_number = line_pos;
-        source.column_number = column_pos;
-        ok_move.source = source;
+        //source.line_number = line_pos;
+        //source.column_number = column_pos;
+        //ok_move.source = source;
+        ok_move.source.line_number = line_pos;
+        ok_move.source.column_number = column_pos;
         ok_move.jumped.line_number = line_pos-1;
         ok_move.jumped.column_number = column_pos;
         ok_move.destination.line_number = line_pos-2;
