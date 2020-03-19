@@ -1,0 +1,32 @@
+\documentclass[12pt, a4paper]{report}
+\usepackage[utf8]{inputenc}
+%\usepackage[scaled]{helvet}
+%\renewcommand*\familydefault{\sfdefault}
+\usepackage[french]{babel}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage[svgnames]{xcolor}
+\usepackage{enumitem}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{sectsty}
+
+
+% Permet de changer la numérotation de la documentclass pour les sections
+\renewcommand{\thesection}{\arabic{section}}
+
+% Définition des listes
+\frenchbsetup{StandardLists=true}
+\setitemize{font=\color{SeaGreen}}
+
+% Définition des marges (paquets geometry)
+\geometry{margin=2.5cm, vmargin=2.5cm}
+
+% Définition de l'indentation
+\setlength{\parindent}{0cm}
+
+% Couleur des sections et sous-sections
+\sectionfont{\color{blue}}
+\subsectionfont{\color{blue}}
