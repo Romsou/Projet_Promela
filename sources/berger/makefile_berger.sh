@@ -21,7 +21,7 @@ test() {
 
 MSC() {
     [ ! -f "${file}.trail" ] && echo "No trail file found" > /dev/stderr && exit 2
-    spin -c ${file}
+    spin -c -t ${file}
 }
 
 help() {

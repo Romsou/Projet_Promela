@@ -1,0 +1,38 @@
+proc 0 = :init:
+ltl formulae: ! ((((! ((p[1]==p[2]))) || ((p[0]==p[1]))) && ((! ((p[2]==p[3]))) || ((p[0]==p[2])))) U ((((p[0]) && (p[1])) && (p[2])) && (p[3])))
+starting claim 5
+Never claim moves to line 4	[(((!((p[1]==p[2]))||(p[0]==p[1]))&&(!((p[2]==p[3]))||(p[0]==p[2]))))]
+proc 1 = M
+proc 2 = C
+proc 3 = L
+proc 4 = B
+q\p   0   1   2   3   4
+  1   .   .   .   .   canal!aller
+  1   .   canal?aller
+  1   .   .   .   .   canal!aller
+  1   .   .   .   canal?aller
+  1   .   .   .   .   canal!retour
+  1   .   canal?retour
+  1   .   .   .   .   canal!aller
+  1   .   .   canal?aller
+  1   .   .   .   .   canal!aller
+  1   .   canal?aller
+spin: _spin_nvr.tmp:3, Error: assertion violated
+spin: text of failed assertion: assert(!((((p[0]&&p[1])&&p[2])&&p[3])))
+Never claim moves to line 3	[assert(!((((p[0]&&p[1])&&p[2])&&p[3])))]
+spin: trail ends after 38 steps
+-------------
+final state:
+-------------
+#processes: 5
+		p[0] = 1
+		p[1] = 1
+		p[2] = 1
+		p[3] = 1
+ 38:	proc  4 (B:1) berger.pml:13 (state 17)
+ 38:	proc  3 (L:1) berger.pml:21 (state 8)
+ 38:	proc  2 (C:1) berger.pml:31 (state 8)
+ 38:	proc  1 (M:1) berger.pml:26 (state 8)
+ 38:	proc  0 (:init::1) berger.pml:44 (state 6) <valid end state>
+ 38:	proc  - (formulae:1) _spin_nvr.tmp:2 (state 6)
+5 processes created
