@@ -3,7 +3,8 @@
 ## Description
 
 Le projet consiste en la réalisation de deux exercices au travers de la mise en
-place des principes vu en cours d'introductions à la vérification, à savoir:
+œuvre des principes et outils vus en cours d'introduction à la vérification,
+à savoir:
 - **Promela**, langage de modélisation dérivé du C
 - **Spin**, outil de vérification faisant usage de Promela
 
@@ -18,7 +19,7 @@ paramètres décrivant l'opération à effectuer.
 ./makefile_[nom].sh -c
 ```
 
-**Pour produire générer une trace à partir de pan:**
+**Pour générer une trace à partir de pan:**
 ```
 ./makefile_[nom].sh -t
 ```
@@ -27,6 +28,7 @@ paramètres décrivant l'opération à effectuer.
 ```
 ./makefile_[nom].sh -m
 ```
+
 **Pour nettoyer les répertoires:**
 ```
 ./makefile_[nom].sh -d
