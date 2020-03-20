@@ -31,14 +31,9 @@ proctype C(){
     right: atomic{canal?retour; p[3] = 0; goto left;}
 }
 
-/* Formule LTL exploitant les possibilités de spin 6. Equivalent à la génération d'un processus never mais plus propre.
- * La seule différence étant la négation supplémentaire apportée à la formule. Au cas où un test avec un processus never est
- * nécessaire, il suffit de prendre la formule contenue dans formulae sans la négation est de générer directement le processus never
- * voulu avec la commande spin -f
- */ 
-ltl formulae { !((((p[1] == p[2]) -> (p[0] == p[1])) && ((p[2] == p[3]) -> (p[0] == p[2]))) U (p[0] && p[1] && p[2] && p[3])) }
-
-
 init{
-atomic{run M(); run C(); run L(); run B()}
+    atomic{run M(); run C(); run L(); run B()}
 }
+
+/* Formule LTL exploitant les possibilités de spin 6 */
+ltl formulae { !((((p[1] == p[2]) -> (p[0] == p[1])) && ((p[2] == p[3]) -> (p[0] == p[2]))) U (p[0] && p[1] && p[2] && p[3])) }
