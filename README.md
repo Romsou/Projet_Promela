@@ -34,14 +34,18 @@ paramètres décrivant l'opération à effectuer.
 ./makefile_[nom].sh -d
 ```
 
-Toutes les options peuvent être combinées dans l'ordre. Cependant les paramètres
+Toutes les options peuvent être combinées. Cependant les paramètres
 -t et -m dépendent de l'existence d'un fichier pan et d'un fichier trail
 respectivement. Il est donc toujours mieux de les lancer avec l'option -c
-et l'option -comme ceci:
+comme ceci:
 
 ```
 ./makefile_[nom].sh -c -t -m -d
 ```
+
+**Note:** Ne lancez jamais l'option -d avant -t et -m, auquel cas vous ne
+pourrez pas générer de ficher pan ou de trace puisqu'ils seront automatiquement
+effacés avant d'avoir été utilisés.
 
 ## Contributeurs
 
