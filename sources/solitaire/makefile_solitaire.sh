@@ -4,7 +4,7 @@ file=solitaire.pml
 
 compile() {
     spin -a ${file}
-    gcc -DNOREDUCE pan.c -o pan
+    gcc -DNOREDUCE -DVECTORSZ=2048 pan.c -o pan
     ./pan -a -i
 }
 
