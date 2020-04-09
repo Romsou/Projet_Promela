@@ -17,6 +17,8 @@ typedef Move {
 chan board_ready = [0] of {bool}
 chan game_ready = [0] of {bool}
 chan possible_move = [0] of {Move}
+byte number_pegs = 0
+bool currently_playing = 0
 
 Matrix line[7];
 
@@ -31,7 +33,7 @@ proctype prepare_game()
         :: (line_cpt == 1 && (column_cpt == 0 || column_cpt == 6)) -> line[line_cpt].column[column_cpt] = 2;
         :: (line_cpt == 5 && (column_cpt == 0 || column_cpt == 6)) -> line[line_cpt].column[column_cpt] = 2;
         :: (line_cpt == 6 && (column_cpt == 0 || column_cpt == 1 || column_cpt == 5 || column_cpt == 6)) -> line[line_cpt].column[column_cpt] = 2;
-        :: else -> line[line_cpt].column[column_cpt] = 1;
+        :: else -> line[line_cpt].column[column_cpt] = 1; number_pegs = number_pegs + 1;
         fi;
         printf("Value = %d\n",line[line_cpt].column[column_cpt]);
         column_cpt = column_cpt+1;
@@ -104,16 +106,20 @@ proctype setup_cases()
 proctype player()
 {
   printf("Player process is running !\n");
+  currently_playing = 1;
   play_move : do
               :: Move to_do_move; atomic{possible_move?to_do_move;
                 if
                 ::(line[to_do_move.source.line_number].column[to_do_move.source.column_number] == 1 &&
                   line[to_do_move.jumped.line_number].column[to_do_move.jumped.column_number] == 1 &&
                   line[to_do_move.destination.line_number].column[to_do_move.destination.column_number] == 0) ->
+                  atomic{
                   printf("Move [%d,%d] -> [%d,%d] done\n",to_do_move.source.line_number,to_do_move.source.column_number,to_do_move.destination.line_number,to_do_move.destination.column_number);
                   line[to_do_move.source.line_number].column[to_do_move.source.column_number] = 0;
                   line[to_do_move.jumped.line_number].column[to_do_move.jumped.column_number] = 0;
                   line[to_do_move.destination.line_number].column[to_do_move.destination.column_number] = 1;
+                  number_pegs = number_pegs - 1;
+                  }
                 ::else -> printf("Move is discarded\n"); goto play_move;
                 fi}
               od
@@ -127,3 +133,6 @@ init
   :: game_ready?1 -> run player();
   fi
 };
+
+/* Formule LTL exploitant les possibilités de spin 6 */
+ltl formulae { !<>(currently_playing == 1 && number_pegs == 1)}
