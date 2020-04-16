@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-file=solitaire.pml
+file=solitaireV2.pml
 
 compile() {
     spin -a ${file}
