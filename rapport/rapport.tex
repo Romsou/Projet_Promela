@@ -50,7 +50,7 @@ Les sections suivantes présenteront brièvement l'organisation du travail et la
 
 \section{Organisation du travail}
 
-Le travail a été séparé en deux groupes. M.Soumard s'est chargé de l'exercice 1 tandis que M.Mollet s'est chargé de l'exercice 2. Le travail s'est fait via github. Une fois les exercices terminés, une dernière sessions s'est faite afin d'harmoniser le rendu, nettoyer le code, et rajouter des script bash faisant office de makefile afin de faciliter la correction.
+Le travail a été séparé en deux groupes. M.Soumard s'est chargé de l'exercice 1 tandis que M.Mollet s'est chargé de l'exercice 2. Le travail s'est fait via GitHub. Une fois les exercices terminés, une dernière session de travail s'est tenue afin d'harmoniser le rendu, nettoyer le code, et rajouter des script bash faisant office de makefile afin de faciliter la correction.
 
 \section{Exercice 1: Problème du berger}
 
@@ -58,11 +58,11 @@ Le travail a été séparé en deux groupes. M.Soumard s'est chargé de l'exerci
 
 La résolution du problème du berger s'est faite en deux temps. Il a tout d'abord fallu trouver les caractéristiques de l'exécution que l'on désirait obtenir. Une fois ceci fait, il a fallut l'exprimer à l'aide d'une formule LTL.
 
-Bien que dans un premier temps, nous exprimions la propriété à vérifier à l'aide d'un processus never, il nous est apparu en parcourant la documentation de spin qu'il était bien plus aisé d'exprimer directement la propriété recherchée dans le code. Il s'agit en effet de la méthode recommandée depuis spin 6, celle-ci étant plus propre et équivalente (la formule reste la même, elle n'est juste pas automatiquement nier quand on génère un processus never).
+Bien que dans un premier temps, nous exprimions la propriété à vérifier à l'aide d'un processus never, il nous est apparu en parcourant la documentation de spin qu'il était bien plus aisé d'exprimer directement la propriété recherchée dans le code. Il s'agit en effet de la méthode recommandée depuis spin 6, celle-ci étant plus propre et équivalente (la formule reste la même, elle n'est juste pas automatiquement niée quand on génère un processus never).
 
 Après avoir trouver la formule appropriée, une longue phase de débugguage s'en est suivi pour comprendre pourquoi nous n'arrivions pas à générer le modèle approprié. Il s'est avéré que cela était dû à l'ordre dans lequel nous modélisions les traversées des différents protagonistes.
 
-En effet, pour vérifier la propriété voulu, il était essentiel que le berger arrive avant ses amis sur la rive opposée dans notre modèle.
+En effet, pour vérifier la propriété voulue, il était essentiel que le berger arrive avant ses amis sur la rive opposée dans notre modèle.
 
 Une fois terminée, nous nous sommes aperçus que l'exécution engendrée par notre propriété produisait déjà une solution optimale (facile à vérifier à l'aide d'un graphe.). Nous avons donc généré un graphe de séquence de message (MSC) afin de compléter l'exercice.
 
@@ -71,5 +71,31 @@ Une fois terminée, nous nous sommes aperçus que l'exécution engendrée par no
 Vous trouverez ci-joint dans le fichier MSC\_berger.txt le MSC du problème du berger.
 
 \section{Exercice 2: Modélisation du solitaire}
+
+\subsection{Modélisation du problème de base}
+
+La modélisation du solitaire européen classique fut une grosse partie de cet exercice : en effet, nous voulions une modélisation propre et modulable afin de préparer le terrain pour la deuxième partie de l'exercice où nous allions avoir à changer la forme et la taille du plateau.
+
+\subsubsection{Premier jet}
+
+Dans un premier temps, nous sommes partis sur la création d'une matrice pour représenter le plateau (le type matrice a été défini comme tableau de tableau avec un typedef). Chacune des cases de la matrice contient une valeur parmis les suivantes :
+\begin{itemize}
+\item 0 : la case est libre
+\item 1 : la case est occupée
+\item 2 : la case est interdite (cette dernière option permet de représenter n'importe quel plateau sous forme de matrice carrée, bien plus simple a gérer)
+\end{itemize}
+Nous avons conservé cette idée de matrice à état pour le reste de la modélisation.
+
+Par la suite, et là se dessine un mauvais choix, nous avons programmé un processus pour initialiser le plateau avec les bonnes valeurs pour chaque case. C'est une erreur car cela ne permet pas de modularité au niveau du choix du plateau, mais également car il n'est pas nécessaire de faire appel a un processus pour cela, il y a bien plus simple. Cette approche sera donc retirée par la suite.
+
+Ensuite, nous avons défini que chaque case serait représentée par un processus individuel. Nous n'avions a ce moment là aucune autre idée de comment gérer les coups possibles : nous avons donc décidé d'initialiser un processus par case vérifiant si un coup est jouable depuis celle ci, et de placer dans un channel ledit coup. Cette solution fonctionne convenablement lorsqu'il s'agit juste de laisser jouer le solitaire, mais elle crée des problèmes de consommation exponentielle de RAM lorsque l'on utilise pan pour trouver une solution au jeu. En effet, autant de processus et de possibilités font consommer beaucoup trop de mémoire à pan, qui essaye tant bien que mal d'appliquer son backtracking. Evidemment, cette partie de la modélisation à été remplacée par la suite.
+
+Enfin, une partie de la modélisation que nous avons gardé (mais modifié plus tard) est un processus player. Ce processus attend un coup jouable sur un channel "rendez-vous" (coup envoyé par un des processus de case), puis joue ce coup là, modifiant le plateau en conséquence. Il attend ensuite un autre coup et continue sur le même principe. Ce processus sera modifié plus tard pour s'adapter a la disparition des processus de case.
+
+Dans l'ensemble, cette première modélisation du problème fut plutôt instinctive et satisfaisant si on ne considère pas de formule LTL à vérifier, dans le sens où le "jeu" se déroule tout de même. Néanmoins, l'utilisation d'un processus par case est une grosse erreur menant à de nombreux soucis dès lors que l'on utilise pan.
+
+\subsubsection{Deuxième jet}
+
+
 
 \end{document}
