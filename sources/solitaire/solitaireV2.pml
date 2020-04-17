@@ -39,17 +39,12 @@ typedef Matrix {
   byte column[7] = 2
 };
 
+Matrix matrix[7];
+
+
+
 // Plateau européen par défaut pour commencer le travail
 // TODO: Générer la matrice ou le processus à la volée
-short matrix[board_width][board_height] = {
-  2, 2, 1, 1, 1, 2, 2,
-  2, 1, 1, 1, 1, 1, 2,
-  1, 1, 1, 0, 1, 1, 1,
-  1, 1, 1, 1, 1, 1, 1,
-  1, 1, 1, 1, 1, 1, 1,
-  2, 1, 1, 1, 1, 1, 2,
-  2, 2, 1, 1, 1, 2, 2,
-}
 byte first_hole_line = 2;
 byte first_hole_column = 3;
 byte number_pegs = 36;
@@ -60,51 +55,102 @@ byte number_pegs = 36;
 // - Si le mouvement est valide on modifie le plateau et on transmet les
 //   cases libres générées.
 proctype board() {
+  matrix[0].column[0]=2;
+  matrix[0].column[1]=2;
+  matrix[0].column[2]=1;
+  matrix[0].column[3]=1;
+  matrix[0].column[4]=1;
+  matrix[0].column[5]=2;
+  matrix[0].column[6]=2;
+
+  matrix[1].column[0]=2;
+  matrix[1].column[1]=1;
+  matrix[1].column[2]=1;
+  matrix[1].column[3]=1;
+  matrix[1].column[4]=1;
+  matrix[1].column[5]=1;
+  matrix[1].column[6]=2;
+
+  matrix[2].column[0]=1;
+  matrix[2].column[1]=1;
+  matrix[2].column[2]=1;
+  matrix[2].column[3]=0;
+  matrix[2].column[4]=1;
+  matrix[2].column[5]=1;
+  matrix[2].column[6]=1;
+
+  matrix[3].column[0]=1;
+  matrix[3].column[1]=1;
+  matrix[3].column[2]=1;
+  matrix[3].column[3]=1;
+  matrix[3].column[4]=1;
+  matrix[3].column[5]=1;
+  matrix[3].column[6]=1;
+
+  matrix[4].column[0]=1;
+  matrix[4].column[1]=1;
+  matrix[4].column[2]=1;
+  matrix[4].column[3]=1;
+  matrix[4].column[4]=1;
+  matrix[4].column[5]=1;
+  matrix[4].column[6]=1;
+
+  matrix[5].column[0]=2;
+  matrix[5].column[1]=1;
+  matrix[5].column[2]=1;
+  matrix[5].column[3]=1;
+  matrix[5].column[4]=1;
+  matrix[5].column[5]=1;
+  matrix[5].column[6]=2;
+
+  matrix[6].column[0]=2;
+  matrix[6].column[1]=2;
+  matrix[6].column[2]=1;
+  matrix[6].column[3]=1;
+  matrix[6].column[4]=1;
+  matrix[6].column[5]=2;
+  matrix[6].column[6]=2;
     Move current_move;
-    free_holes!(first_hole_line,first_hole_column);
+    free_holes!first_hole_line,first_hole_column;
+    ready!1;
     wait_move : atomic{move_to_play?current_move ->
      if
-     ::(current_move.direction == UP &&
-        matrix[current_move.line_number-2][current_move.column_number] == 1 &&
-        matrix[current_move.line_number-1][current_move.column_number] == 1) ->
-        matrix[current_move.line_number-2][current_move.column_number] = 0;
-        matrix[current_move.line_number-1][current_move.column_number] = 0;
-        matrix[current_move.line_number][current_move.column_number] = 1;
-        free_holes!(current_move.line_number-2,current_move.column_number);
-        free_holes!(current_move.line_number-1,current_move.column_number);
-        number_pegs = number_pegs - 2;
+     ::(current_move.direction == UP) ->
+        printf("Playing [%d,%d,UP]\n",current_move.line_number,current_move.column_number);
+        matrix[current_move.line_number-2].column[current_move.column_number] = 0;
+        matrix[current_move.line_number-1].column[current_move.column_number] = 0;
+        matrix[current_move.line_number].column[current_move.column_number] = 1;
+        free_holes!current_move.line_number-2,current_move.column_number;
+        free_holes!current_move.line_number-1,current_move.column_number;
+        number_pegs = number_pegs - 1;
         ready!1; goto wait_move;
-     ::(current_move.direction == DOWN &&
-        matrix[current_move.line_number+2][current_move.column_number] == 1 &&
-        matrix[current_move.line_number+1][current_move.column_number] == 1) ->
-        matrix[current_move.line_number+2][current_move.column_number] = 0;
-        matrix[current_move.line_number+1][current_move.column_number] = 0;
-        matrix[current_move.line_number][current_move.column_number] = 1;
-        free_holes!(current_move.line_number+2,current_move.column_number);
-        free_holes!(current_move.line_number+1,current_move.column_number);
-        number_pegs = number_pegs - 2;
+     ::(current_move.direction == DOWN) ->
+        printf("Playing [%d,%d,DOWN]\n",current_move.line_number,current_move.column_number);
+        matrix[current_move.line_number+2].column[current_move.column_number] = 0;
+        matrix[current_move.line_number+1].column[current_move.column_number] = 0;
+        matrix[current_move.line_number].column[current_move.column_number] = 1;
+        free_holes!current_move.line_number+2,current_move.column_number;
+        free_holes!current_move.line_number+1,current_move.column_number;
+        number_pegs = number_pegs - 1;
         ready!1; goto wait_move;
-     ::(current_move.direction == LEFT &&
-        matrix[current_move.line_number][current_move.column_number-2] == 1 &&
-        matrix[current_move.line_number][current_move.column_number-1] == 1) ->
-        matrix[current_move.line_number][current_move.column_number-2] = 0;
-        matrix[current_move.line_number][current_move.column_number-1] = 0;
-        matrix[current_move.line_number][current_move.column_number] = 1;
-        free_holes!(current_move.line_number,current_move.column_number-2);
-        free_holes!(current_move.line_number,current_move.column_number-1);
-        number_pegs = number_pegs - 2;
+     ::(current_move.direction == LEFT) ->
+        printf("Playing [%d,%d,LEFT]\n",current_move.line_number,current_move.column_number);
+        matrix[current_move.line_number].column[current_move.column_number-2] = 0;
+        matrix[current_move.line_number].column[current_move.column_number-1] = 0;
+        matrix[current_move.line_number].column[current_move.column_number] = 1;
+        free_holes!current_move.line_number,current_move.column_number-2;
+        free_holes!current_move.line_number,current_move.column_number-1;
+        number_pegs = number_pegs - 1;
         ready!1; goto wait_move;
-     ::(current_move.direction == RIGHT &&
-        matrix[current_move.line_number][current_move.column_number+2] == 1 &&
-        matrix[current_move.line_number][current_move.column_number+1] == 1) ->
-        matrix[current_move.line_number][current_move.column_number+2] = 0;
-        matrix[current_move.line_number][current_move.column_number+1] = 0;
-        matrix[current_move.line_number][current_move.column_number] = 1;
-        free_holes!(current_move.line_number,current_move.column_number+2);
-        free_holes!(current_move.line_number,current_move.column_number+1);
-        number_pegs = number_pegs - 2;
+     ::(current_move.direction == RIGHT) ->
+        printf("Playing [%d,%d,RIGHT]\n",current_move.line_number,current_move.column_number);
+        matrix[current_move.line_number].column[current_move.column_number+2] = 0;
+        matrix[current_move.line_number].column[current_move.column_number+1] = 0;
+        matrix[current_move.line_number].column[current_move.column_number] = 1;
+        free_holes!current_move.line_number,current_move.column_number+2;
+        free_holes!current_move.line_number,current_move.column_number+1;
+        number_pegs = number_pegs - 1;
         ready!1; goto wait_move;
-     ::else -> ready!1; goto wait_move;
      fi
        }
 }
@@ -116,15 +162,20 @@ proctype board() {
 proctype player() {
     Move to_send_move;
     byte line; byte column;
-    wait_signal : ready?1
-    atomic{ free_holes?(line,column) ->
+    wait_signal : ready?1;
+    choose_hole : atomic{ free_holes?line,column ->
       to_send_move.line_number = line;
       to_send_move.column_number = column;
       if
-      :: to_send_move.direction = UP;
-      :: to_send_move.direction = DOWN;
-      :: to_send_move.direction = LEFT;
-      :: to_send_move.direction = RIGHT;
+       :: ((line-2)>=0 && matrix[line-2].column[column] == 1
+        && matrix[line-1].column[column] == 1) -> to_send_move.direction = UP;
+       :: ((line+2)<7 && matrix[line+2].column[column] == 1
+        && matrix[line+1].column[column] == 1) -> to_send_move.direction = DOWN;
+       :: ((column-2)>=0 && matrix[line].column[column-2] == 1
+        && matrix[line].column[column-1] == 1) -> to_send_move.direction = LEFT;
+       :: ((column+2)<7 && matrix[line].column[column+2] == 1
+        && matrix[line].column[column+1] == 1) -> to_send_move.direction = RIGHT;
+       :: else -> printf("No playable move on this hole, moving to next one\n"); goto choose_hole;
       fi
       move_to_play!to_send_move;
       goto wait_signal;
