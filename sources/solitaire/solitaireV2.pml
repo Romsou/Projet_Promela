@@ -7,15 +7,15 @@
 *********************************************/
 
 // Taille par défaut du plateau
-int board_height = 9;
-int board_width = 9;
+int board_height = 7;
+int board_width = 7;
 
 // Canal par RDV, indique au joueur quand le buffer a fini
-// d'être remplie.
+// d'être rempli.
 chan ready = [0] of { short }
 
 // Buffer de production-consommation pour les cases libres
-// Le nombre de cases vide peut-être égale à la taille du plateau -1
+// Le nombre de cases vide peut-être égal à la taille du plateau -1
 chan free_holes = [] of { int }
 
 // Processus correspondant au Plateau
@@ -27,16 +27,14 @@ proctype board() {
     // Plateau européen par défaut pour commencer le travail
     // TODO: Générer la matrice ou le processus à la volée
     short matrix[board_width][board_height] = {
-      2, 2, 2, 1, 1, 1, 2, 2, 2,
-      2, 2, 2, 1, 1, 1, 2, 2, 2,
-      2, 2, 2, 1, 1, 1, 2, 2, 2,
-      1, 1, 1, 1, 1, 1, 1, 1, 1,
-      1, 1, 1, 1, 0, 1, 1, 1, 1,
-      1, 1, 1, 1, 1, 1, 1, 1, 1,
-      2, 2, 2, 1, 1, 1, 2, 2, 2,
-      2, 2, 2, 1, 1, 1, 2, 2, 2,
-      2, 2, 2, 1, 1, 1, 2, 2, 2,
-  }
+      2, 2, 1, 1, 1, 2, 2,
+      2, 1, 1, 1, 1, 1, 2,
+      1, 1, 1, 0, 1, 1, 1,
+      1, 1, 1, 1, 1, 1, 1,
+      1, 1, 1, 1, 1, 1, 1,
+      2, 1, 1, 1, 1, 1, 2,
+      2, 2, 1, 1, 1, 2, 2,
+    }
 
 
 }
