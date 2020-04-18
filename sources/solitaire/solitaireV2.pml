@@ -175,7 +175,7 @@ proctype player() {
         && matrix[line].column[column-1] == 1) -> to_send_move.direction = LEFT;
        :: ((column+2)<7 && matrix[line].column[column+2] == 1
         && matrix[line].column[column+1] == 1) -> to_send_move.direction = RIGHT;
-       :: else -> printf("No playable move on this hole, moving to next one\n"); goto choose_hole;
+       :: else -> free_holes!line,column; goto choose_hole;
       fi
       move_to_play!to_send_move;
       goto wait_signal;
@@ -186,3 +186,6 @@ init
 {
   atomic{run board(); run player();}
 }
+
+/* Formule LTL exploitant les possibilités de spin 6 */
+ltl formulae { !<>(number_pegs == 1)}
