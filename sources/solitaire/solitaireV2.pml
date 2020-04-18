@@ -24,13 +24,19 @@ typedef Move {
   byte direction
 };
 
+typedef Hole {
+  byte line
+  byte column
+  byte seen
+}
+
 // Canal par RDV, indique au joueur quand le buffer a fini
 // d'être rempli.
 chan ready = [0] of { bool }
 
 // Buffer de production-consommation pour les cases libres
 // Le nombre de cases vide peut-être égal à la taille du plateau -1
-chan free_holes = [36] of { byte, byte }
+chan free_holes = [36] of { Hole }
 
 // Canal par RDV, permettant au joueur d'envoyer au plateau le coup à jouer
 chan move_to_play = [0] of { Move }
@@ -40,8 +46,6 @@ typedef Matrix {
 };
 
 Matrix matrix[7];
-
-
 
 // Plateau européen par défaut pour commencer le travail
 // TODO: Générer la matrice ou le processus à la volée
@@ -110,8 +114,8 @@ proctype board() {
   matrix[6].column[4]=1;
   matrix[6].column[5]=2;
   matrix[6].column[6]=2;
-    Move current_move;
-    free_holes!first_hole_line,first_hole_column;
+    Move current_move; Hole hole; hole.line = first_hole_line; hole.column = first_hole_column;
+    free_holes!hole;
     ready!1;
     wait_move : atomic{move_to_play?current_move ->
      if
@@ -120,8 +124,11 @@ proctype board() {
         matrix[current_move.line_number-2].column[current_move.column_number] = 0;
         matrix[current_move.line_number-1].column[current_move.column_number] = 0;
         matrix[current_move.line_number].column[current_move.column_number] = 1;
-        free_holes!current_move.line_number-2,current_move.column_number;
-        free_holes!current_move.line_number-1,current_move.column_number;
+        hole.column = current_move.column_number;
+        hole.line = current_move.line_number-2;
+        free_holes!hole;
+        hole.line = current_move.line_number-1;
+        free_holes!hole;
         number_pegs = number_pegs - 1;
         ready!1; goto wait_move;
      ::(current_move.direction == DOWN) ->
@@ -129,8 +136,11 @@ proctype board() {
         matrix[current_move.line_number+2].column[current_move.column_number] = 0;
         matrix[current_move.line_number+1].column[current_move.column_number] = 0;
         matrix[current_move.line_number].column[current_move.column_number] = 1;
-        free_holes!current_move.line_number+2,current_move.column_number;
-        free_holes!current_move.line_number+1,current_move.column_number;
+        hole.column = current_move.column_number;
+        hole.line = current_move.line_number+2;
+        free_holes!hole;
+        hole.line = current_move.line_number+1;
+        free_holes!hole;
         number_pegs = number_pegs - 1;
         ready!1; goto wait_move;
      ::(current_move.direction == LEFT) ->
@@ -138,8 +148,11 @@ proctype board() {
         matrix[current_move.line_number].column[current_move.column_number-2] = 0;
         matrix[current_move.line_number].column[current_move.column_number-1] = 0;
         matrix[current_move.line_number].column[current_move.column_number] = 1;
-        free_holes!current_move.line_number,current_move.column_number-2;
-        free_holes!current_move.line_number,current_move.column_number-1;
+        hole.line = current_move.line_number;
+        hole.column = current_move.column_number-2;
+        free_holes!hole;
+        hole.column = current_move.column_number-1;
+        free_holes!hole;
         number_pegs = number_pegs - 1;
         ready!1; goto wait_move;
      ::(current_move.direction == RIGHT) ->
@@ -147,8 +160,11 @@ proctype board() {
         matrix[current_move.line_number].column[current_move.column_number+2] = 0;
         matrix[current_move.line_number].column[current_move.column_number+1] = 0;
         matrix[current_move.line_number].column[current_move.column_number] = 1;
-        free_holes!current_move.line_number,current_move.column_number+2;
-        free_holes!current_move.line_number,current_move.column_number+1;
+        hole.line = current_move.line_number;
+        hole.column = current_move.column_number+2;
+        free_holes!hole;
+        hole.column = current_move.column_number+1;
+        free_holes!hole;
         number_pegs = number_pegs - 1;
         ready!1; goto wait_move;
      fi
@@ -161,24 +177,34 @@ proctype board() {
 // - Envoyer une direction au board.
 proctype player() {
     Move to_send_move;
-    byte line; byte column;
+    Hole hole; byte line; byte column;
     wait_signal : ready?1;
-    choose_hole : atomic{ free_holes?line,column ->
+    choose_hole : atomic{ free_holes?hole ->
+      line = hole.line; column = hole.column;
       to_send_move.line_number = line;
       to_send_move.column_number = column;
       if
        :: ((line-2)>=0 && matrix[line-2].column[column] == 1
-        && matrix[line-1].column[column] == 1) -> to_send_move.direction = UP;
+        && matrix[line-1].column[column] == 1) -> to_send_move.direction = UP; hole.seen = 0;
        :: ((line+2)<7 && matrix[line+2].column[column] == 1
-        && matrix[line+1].column[column] == 1) -> to_send_move.direction = DOWN;
+        && matrix[line+1].column[column] == 1) -> to_send_move.direction = DOWN; hole.seen = 0;
        :: ((column-2)>=0 && matrix[line].column[column-2] == 1
-        && matrix[line].column[column-1] == 1) -> to_send_move.direction = LEFT;
+        && matrix[line].column[column-1] == 1) -> to_send_move.direction = LEFT; hole.seen = 0;
        :: ((column+2)<7 && matrix[line].column[column+2] == 1
-        && matrix[line].column[column+1] == 1) -> to_send_move.direction = RIGHT;
-       :: else -> free_holes!line,column; goto choose_hole;
+        && matrix[line].column[column+1] == 1) -> to_send_move.direction = RIGHT; hole.seen = 0;
+       :: !((line-2)>=0 && matrix[line-2].column[column] == 1
+        && matrix[line-1].column[column] == 1) &&
+          !((line+2)<7 && matrix[line+2].column[column] == 1
+        && matrix[line+1].column[column] == 1) &&
+          !((column-2)>=0 && matrix[line].column[column-2] == 1
+        && matrix[line].column[column-1] == 1) &&
+          !((column+2)<7 && matrix[line].column[column+2] == 1
+        && matrix[line].column[column+1] == 1) -> hole.seen = hole.seen+1; free_holes!hole; goto choose_hole;
+       :: (hole.seen == 3) -> goto ending_game;
       fi
       move_to_play!to_send_move;
       goto wait_signal;
+      ending_game : printf("Game is over !");
     }
 }
 
