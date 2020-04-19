@@ -3,6 +3,7 @@
 import sys, math
 from termcolor import colored
 
+
 class Coord:
     def __init__(self, x: int, y: int):
         self.x = x
@@ -29,20 +30,18 @@ def generate_european_board(size: int):
 
     for y in range(1, middle - math.floor(square_size / 2)):
         for x in range(start, end):
-            print(x, y)
             board[y][x] = 1
         start -= 1
         end += 1
 
     for y in range(middle + math.floor(square_size / 2), size - 1):
         for x in range(start, end):
-            print(x, y)
             board[y][x] = 1
         start += 1
         end -= 1
 
-
     return board
+
 
 def generate_english_board(size: int):
     check_board_size_is_odd(size)
@@ -100,7 +99,34 @@ def generate_rectangle(board: list, width: int, height: int, coord: Coord) -> li
             board[coord.y + i][coord.x + j] = 1
 
 
+######################## File write ########################
+
+def write_board(filename, board):
+    header_file = open("../templates/header.txt", "r")
+    footer_file = open("../templates/footer.txt", "r")
+
+    with open(filename, "w") as program:
+        program.write(header_file.read() + "\n\n")
+        program.write("typedef Matrix {{\n byte column[{}] = 1 \n}}; \n\n".format(len(board)))
+        program.write("Matrix matrix[{}];\n".format(len(board)))
+
+        program.write("proctype board() {\n atomic {\n")
+        program.write("to_send_move.line_number = 2;\n")
+        program.write("to_send_move.column_number = 2;\n")
+
+        for row in range(len(board)):
+            for col in range(len(board[row])):
+                program.write("matrix[{}].column[{}] = {}\n".format(row, col, board[row][col]))
+            program.write("\n")
+
+        program.write(footer_file.read() + "\n\n")
+
+    header_file.close()
+    footer_file.close()
+
+
 ######################## Misc ########################
+
 
 def rotate(board, size, matrix):
         middle = math.floor(size / 2)
@@ -146,9 +172,8 @@ def check_board_size_is_odd(size: int):
 
 def main():
     board = generate_european_board(9)
+    write_board("../solitairePrototype.pml", board)
     print_board(board)
-
-
 
 
 if __name__ == '__main__':
