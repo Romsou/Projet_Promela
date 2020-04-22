@@ -30,6 +30,7 @@
 % Couleur des sections et sous-sections
 \sectionfont{\color{blue}}
 \subsectionfont{\color{blue}}
+\subsubsectionfont{\color{blue}}
 
 \title{\color{blue}Projet d'introduction à la vérification}
 \date{\today}
@@ -50,7 +51,8 @@ Les sections suivantes présenteront brièvement l'organisation du travail et la
 
 \section{Organisation du travail}
 
-Le travail a été séparé en deux groupes. M. Soumard s'est chargé de l'exercice 1 tandis que M. Mollet s'est chargé de l'exercice 2. Le travail s'est fait via GitHub. Une fois les exercices terminés, une dernière session de travail s'est tenue afin d'harmoniser le rendu, nettoyer le code, et rajouter des script bash faisant office de makefile afin de faciliter la correction.
+Initialement, le travail devait être partagé. Romain devait se charger de l'exercice 1 tandis qu'Adrien devait se charger de l'exercice 2. Cependant, il est vite apparu au cours de l'exercice 2 que deux personnes ne seraient pas de trop pour résoudre l'ensemble de l'exercice.
+Les deux exercices ont donc été effectués en commun au fur et à mesure de l'avancée du projet.
 
 \section{Exercice 1: Problème du berger}
 
@@ -74,11 +76,11 @@ Vous trouverez ci-joint dans le fichier MSC\_berger.txt le MSC du problème du b
 
 \subsection{Modélisation du problème de base}
 
-La modélisation du solitaire européen classique fut une grosse partie de cet exercice : en effet, nous voulions une modélisation propre et modulable afin de préparer le terrain pour la deuxième partie de l'exercice où nous allions avoir à changer la forme et la taille du plateau.
+La modélisation du solitaire européen classique fut une grosse partie de cet exercice : en effet, nous voulions une modélisation propre et modulable afin de pouvoir générer automatiquement, dans un second temps, un programme Promela capable de gérer des plateaux de type et de tailles différentes.
 
 \subsubsection{Premier jet}
 
-Dans un premier temps, nous sommes partis sur la création d'une matrice pour représenter le plateau (le type matrice a été défini comme tableau de tableau avec un typedef). Chacune des cases de la matrice contient une valeur parmis les suivantes :
+Dans un premier temps, nous sommes partis sur la création d'une matrice pour représenter le plateau (le type matrice a été défini comme tableau de tableau avec un typedef). Chacune des cases de la matrice contient une valeur parmi les suivantes :
 \begin{itemize}
 \item 0 : la case est libre
 \item 1 : la case est occupée
@@ -86,50 +88,55 @@ Dans un premier temps, nous sommes partis sur la création d'une matrice pour re
 \end{itemize}
 Nous avons conservé cette idée de matrice à état pour le reste de la modélisation.
 
-Par la suite, et là se dessine un mauvais choix, nous avons programmé un processus pour initialiser le plateau avec les bonnes valeurs pour chaque case. C'est une erreur car cela ne permet pas de modularité au niveau du choix du plateau, mais également car il n'est pas nécessaire de faire appel a un processus pour cela, il y a bien plus simple. Cette approche sera donc retirée par la suite.
+Par la suite, et là se dessine un mauvais choix, nous avons programmé un processus pour initialiser le plateau avec les bonnes valeurs pour chaque case. C'est une erreur car cela ne permet pas de modularité au niveau du choix du plateau, mais également car il n'est pas nécessaire de faire appel à un processus pour cela. Nous avons donc décidé d'oublier cette approche pour la suite.
 
-Ensuite, nous avons défini que chaque case serait représentée par un processus individuel. Nous n'avions a ce moment là aucune autre idée de comment gérer les coups possibles : nous avons donc décidé d'initialiser un processus par case vérifiant si un coup est jouable depuis celle ci, et de placer dans un channel ledit coup. Cette solution fonctionne convenablement lorsqu'il s'agit juste de laisser jouer le solitaire, mais elle crée des problèmes de consommation exponentielle de RAM lorsque l'on utilise pan pour trouver une solution au jeu. En effet, autant de processus et de possibilités font consommer beaucoup trop de mémoire à pan, qui essaye tant bien que mal d'appliquer son backtracking. Evidemment, cette partie de la modélisation à été remplacée par la suite.
+Ensuite, nous avons défini que chaque case serait représentée par un processus individuel. Nous n'avions a ce moment là aucune autre idée de comment gérer les coups possibles : nous avons donc décidé d'initialiser un processus par case vérifiant si un coup est jouable depuis celle-ci, et de placer dans un channel ledit coup. Cette solution fonctionne convenablement lorsqu'il s'agit de juste laisser jouer le solitaire, mais elle crée des problèmes de consommation exponentielle de RAM lorsque l'on utilise pan pour trouver une solution au jeu. En effet, autant de processus et de possibilités font consommer beaucoup trop de mémoire à pan, qui essaye tant bien que mal d'appliquer son algorithme (basé sur le principe du backtracking). Evidemment, cette partie de la modélisation à été remplacée par la suite.
 
-Enfin, une partie de la modélisation que nous avons gardé (mais modifié plus tard) est un processus player. Ce processus attend un coup jouable sur un channel "rendez-vous" (coup envoyé par un des processus de case), puis joue ce coup là, modifiant le plateau en conséquence. Il attend ensuite un autre coup et continue sur le même principe. Ce processus sera modifié plus tard pour s'adapter a la disparition des processus de case.
+Enfin, une partie de la modélisation que nous avons gardé (mais modifié plus tard) est le processus player. Ce processus attend un coup jouable sur un channel "rendez-vous" (coup envoyé par un des processus de case), puis joue ce coup-là, modifiant le plateau en conséquence. Il attend ensuite un autre coup et continue sur le même principe. Ce processus sera modifié plus tard pour s'adapter à la disparition des processus de case.
 
-Dans l'ensemble, cette première modélisation du problème fut plutôt instinctive et satisfaisant si on ne considère pas de formule LTL à vérifier, dans le sens où le "jeu" se déroule tout de même. Néanmoins, l'utilisation d'un processus par case est une grosse erreur menant à de nombreux soucis dès lors que l'on utilise pan.
+Dans l'ensemble, cette première modélisation du problème fut plutôt instinctive et satisfaisante si on ne considère pas de formule LTL à vérifier, dans le sens où le "jeu" se déroule tout de même. Néanmoins, l'utilisation d'un processus par case est une grosse erreur menant à de nombreux soucis dès lors que l'on utilise pan.
 
 Vous pouvez retrouver le code de cette première approche dans le fichier "solitaireV1.pml".
 
 \subsubsection{Deuxième, troisième et quatrième jets}
 
-Nous avons décidé de repartir du modèle précédent mais en tentant une autre approche.
+Nous avons décidé de se baser sur modèle précédent mais en tentant une autre approche.
 
-Nous avons conservé l'idée de matrice, mais nous avons changé le principal problème du modèle précédent : la gestion des cases et des coups jouables. Nous avons migré du principe d'un processus par case, un processus player et un processus board vers une approche à seulement deux processus : board et player.
+Nous avons conservé l'idée de matrice, mais nous avons changé le principal problème du modèle précédent : la gestion des cases et des coups jouables. Nous avons migré du principe d'un processus par case, un processus player et un processus board vers une approche à seulement deux processus : board et player. L'idée principale étant de partir cette fois-ci des cases vides afin d'explorer l'ensemble des coups possibles.
 
-Le processus player est chargé d'attendre un signal du board par un channel rendez-vous, de récupérer une case vide dans le channel des cases vides, puis de générer un coup jouable de manière non déterministe. Si aucun coup n'est jouable il replace la case libre dans le channel des cases libres et en sélectionne une autre, et ce jusqu'à générer un mouvement valide. Il envoie ensuite ledit mouvement dans un channel de coup à jouer puis recommence le cycle en attendant un signal du plateau. Le player s'arrête lorsqu'une case libre est sélectionné trois fois sans être jouée.
+Le processus player attend l'arrivée d'une case vide dans un canal de type file d'attente, génère une direction de manière non-déterministe puis l'envoie au processus board et se met en attente jusqu'à la fin du traitement par celui-ci. La fin du traitement est signalée par un canal ready de type rendez-vous.
 
-Le plateau quant à lui initialise les bonnes valeurs pour le plateau, place la première case libre dans le channel adéquat puis attend un mouvement envoyé par le player. Lorsqu'il reçoit un coup, board le joue, modifiant le plateau en conséquence, décrémentant le nombre de pions restants et ajoutant les cases nouvellements libérées au bon channel. Il recommence ensuite son cycle en attendant un nouveau coup à jouer.
+Le processus board, lui, attend l'arrivée des coordonnées d'une case libre ainsi que d'une direction. Une fois reçue, il applique divers traitements de sécurité et met à jour la matrice du plateau en fonction de la direction qui lui a été communiquée. Si le coup est valide, alors le nombres de pions est décrémenté avant de rendre la main au processus player. Dans le cas contraire, la case vide est remise dans la file d'attente et le nombre de pions n'est pas modifié.
+
+Enfin, le processus init se charge d'initialiser le plateau et de mettre la première case libre dans la file d'attente avant de lancer player et board.
 
 Nous avons regroupé dans cette section les versions 2, 3 et 4 car le modèle est sensiblement le même. La version 4 n'est qu'une réécriture plus propre de la version 2, et souffre des mêmes problèmes (voir plus loin). La version 3 quant à elle est plus particulière. En effet plutôt que de rendre impossible la génération de coups interdits directement dans le modèle, nous avons essayé (sans succès) d'utiliser une formule LTL à cet effet.
 Les différentes versions sont trouvables respectivements sous les noms "solitaireV2.pml", "solitaireV3.pml" et "solitaireV4.pml".
 
 \subsubsection{Problème récurrent}
 
-Malgré nos différentes approches et modélisations, un problème est resté et nous n'avons pas réussi à le corriger. Lors de l'exécution de pan pour chercher une solution au jeu, la mémoire vive est à chaque fois saturée et le calcul ne donne pas de .trail montrant une résolution du jeu.
+Malgré toutes nos tentatives, nous n'avons hélas pas réussi à nous défaire du principal problème de nos différents modèles: la saturation de la RAM. Il arrive en effet très souvent que pan ne puisse générer de fichier trail en un temps satisfaisant. Nous n'avons donc, au mieux, que réussi à générer des traces décrivant des exécutions non optimales, voir aucune trace du tout.
 
-Ce problème peut être dû a deux élements :
-\begin{itemize}
-\item Le modèle n'est pas assez contraint par notre formule LTL. En effet, !(<>(number_pegs == 1)) n'est peut être pas suffisant à pan pour élaguer suffisamment l'arbre des possibilités.
+Ce problème peut avoir, à notre avis, deux causes possibles:
+\begin{enumerate}
+\item Le modèle n'est pas assez contraint par notre formule LTL. En effet, !(<>(number\_pegs == 1)) n'est peut être pas suffisant à pan pour élaguer l'arbre des possibilités.
 \item Notre modèle est trop complexe et comprend trop d'opérations, saturant l'algorithme de calcul de pan.
-\end{itemize}
-Nous avons essayé de plus contraindre le modèle dans solitaireV3 et nous avons essayé de simplifier dans solitaireV2 et solitaireV4 mais rien n'y fait, impossible d'avoir une résolution du jeu.
+\end{enumerate}
+
+Après de nombreux essais et de nombreuses modification, aussi bien de nos modèles que de nos formules LTL, nous ne sommes pas parvenus à générer une solution optimale du jeu du solitaire.
+Nous avons par conséquent décidés de vous proposer un fichier "Proof of Concept", dans lequel pan cherche une exécution pour laquelle le nombre de bille finale est égal à 32, afin de démontrer la viabilité de notre approche. La preuve de concept se trouve dans le répertoire sources/solitaire/proof_of_concept/.
 
 \subsection{Gestion d'autres plateaux}
 
-Conformément au sujet, nous avons réalisé un script ("board_generator.py") permettant de choisir le type de plateau et de générer le programme Promela adéquat. Il est possible de choisir un plateau européen, anglais ou allemand et d'en choisir la taille.
+Conformément au sujet, nous avons réalisé un script "board\_generator.py" permettant de choisir le type de plateau et de générer le programme Promela adéquat. Il est possible de choisir un plateau européen, anglais ou allemand et d'en choisir la taille.
 
 Au vu des problèmes de résolution de notre solitaire dans sa version de base, nous n'avons évidemment pas pu tester la résolution sur des plateaux plus grands. Néanmoins nous avons tout de même tenu à faire le script permettant de faire cette partie du projet.
 
-Nous vous renvoyons maintenant au README pour le fonctionnement de notre projet.
+Nous avons également rédigé deux makefile pour le berger et le solitaire afin de vous faciliter la tâche dans votre correction. Nous vous renvoyons au README pour en comprendre le fonctionnement. Sachez de plus que vous pouvez modifier le fichier pris en compte par le makefile pour le solitaire. il suffit pour cela de changer la variable "file" au début du script.
 
 \section{Conclusion}
 
-En conclusion, nous aimerions mentionner que c'était un projet très intéressant et instructif à effectuer. Découvrir la vérification et les élements essentiels de cette branche de l'informatique fut très enrichissant. Néanmoins les outils spin et surtout Promela opérants dans un paradigme peu familier nous ont parfois posé des difficultés, surtout au niveau conception/modélisation (en témoigne notre modèle du solitaire dont pan ne parvient pas à tirer de solution satisfaisant notre formule LTL). Malgré nos accrochages avec le langage et le logiciel utilisés, ce fut un très bon projet que nous sommes ravis d'avoir réalisé.
+
+En conclusion, le projet fût très intéressant et instructif. Découvrir la vérification et les éléments essentiels de cette branche de l'informatique fût très enrichissant. Néanmoins, les outils spin et surtout Promela usant d'un paradigme peu familier, nous avons rencontrés quelques difficultés, en particulier vis-à-vis de la partie conception et modélisation, lors de nos travaux (en témoigne nos tentatives infructueuses de modélisation du jeu du solitaire). Malgré les complications occasionnées par le langage et les logiciels utilisés, nous avons donc au final apprécié effectuer ce travail qui constitue nos premiers pas dans le domaine de la vérification. 
 
 \end{document}
