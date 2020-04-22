@@ -1,3 +1,113 @@
+#define UP 0
+#define RIGHT 1
+#define DOWN 2
+#define LEFT 3
+
+
+chan ready = [0] of { bool };
+chan move = [1] of { short, short, byte };
+
+chan free_slot = [36] of { short, short };
+int pegs = 36;
+
+typedef Matrix {
+	byte col[9] = 1 
+}; 
+
+Matrix row[9];
+
+init {
+ 	row[0].col[0] = 2;
+	row[0].col[1] = 2;
+	row[0].col[2] = 2;
+	row[0].col[3] = 2;
+	row[0].col[4] = 2;
+	row[0].col[5] = 2;
+	row[0].col[6] = 2;
+	row[0].col[7] = 2;
+	row[0].col[8] = 2;
+
+	row[1].col[0] = 2;
+	row[1].col[1] = 2;
+	row[1].col[2] = 2;
+	row[1].col[3] = 1;
+	row[1].col[4] = 1;
+	row[1].col[5] = 1;
+	row[1].col[6] = 2;
+	row[1].col[7] = 2;
+	row[1].col[8] = 2;
+
+	row[2].col[0] = 2;
+	row[2].col[1] = 2;
+	row[2].col[2] = 1;
+	row[2].col[3] = 1;
+	row[2].col[4] = 1;
+	row[2].col[5] = 1;
+	row[2].col[6] = 1;
+	row[2].col[7] = 2;
+	row[2].col[8] = 2;
+
+	row[3].col[0] = 2;
+	row[3].col[1] = 1;
+	row[3].col[2] = 1;
+	row[3].col[3] = 1;
+	row[3].col[4] = 0;
+	row[3].col[5] = 1;
+	row[3].col[6] = 1;
+	row[3].col[7] = 1;
+	row[3].col[8] = 2;
+
+	row[4].col[0] = 2;
+	row[4].col[1] = 1;
+	row[4].col[2] = 1;
+	row[4].col[3] = 1;
+	row[4].col[4] = 1;
+	row[4].col[5] = 1;
+	row[4].col[6] = 1;
+	row[4].col[7] = 1;
+	row[4].col[8] = 2;
+
+	row[5].col[0] = 2;
+	row[5].col[1] = 1;
+	row[5].col[2] = 1;
+	row[5].col[3] = 1;
+	row[5].col[4] = 1;
+	row[5].col[5] = 1;
+	row[5].col[6] = 1;
+	row[5].col[7] = 1;
+	row[5].col[8] = 2;
+
+	row[6].col[0] = 2;
+	row[6].col[1] = 2;
+	row[6].col[2] = 1;
+	row[6].col[3] = 1;
+	row[6].col[4] = 1;
+	row[6].col[5] = 1;
+	row[6].col[6] = 1;
+	row[6].col[7] = 2;
+	row[6].col[8] = 2;
+
+	row[7].col[0] = 2;
+	row[7].col[1] = 2;
+	row[7].col[2] = 2;
+	row[7].col[3] = 1;
+	row[7].col[4] = 1;
+	row[7].col[5] = 1;
+	row[7].col[6] = 2;
+	row[7].col[7] = 2;
+	row[7].col[8] = 2;
+
+	row[8].col[0] = 2;
+	row[8].col[1] = 2;
+	row[8].col[2] = 2;
+	row[8].col[3] = 2;
+	row[8].col[4] = 2;
+	row[8].col[5] = 2;
+	row[8].col[6] = 2;
+	row[8].col[7] = 2;
+	row[8].col[8] = 2;
+
+	free_slot!4,3;
 
     atomic{
       run player(); run board();
@@ -84,3 +194,5 @@ proctype player() {
 };
 
 ltl formulae { !(<> (pegs == 1)) }
+
+
