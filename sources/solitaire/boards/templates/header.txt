@@ -1,51 +1,8 @@
-/*********************************************
-*    Programme Promela du solitaireV2        *
-*                                            *
-*    Auteurs: Adrien Mollet                  *
-*             Romain Soumard                 *
-*                                            *
-*********************************************/
-
-// Taille par défaut du plateau
-int board_height = 7;
-int board_width = 7;
-
-// Constante de directions pour les coups a joueur
 #define UP 0
-#define DOWN 1
-#define LEFT 2
-#define RIGHT 3
+#define RIGHT 1
+#define DOWN 2
+#define LEFT 3
 
-// Structure nommée représentant un coup (coordonnées de la case d'arrivée +
-// direction par laquelle le pion va arriver)
-typedef Move {
-  byte line_number = 3
-  byte column_number = 3
-  byte direction = DOWN
-};
 
-typedef Hole {
-  byte line
-  byte column
-  byte seen
-}
-
-// Canal par RDV, indique au joueur quand le buffer a fini
-// d'être rempli.
-chan ready = [0] of { bool }
-
-// Buffer de production-consommation pour les cases libres
-// Le nombre de cases vide peut-être égal à la taille du plateau -1
-chan free_holes = [36] of { Hole }
-
-// Canal par RDV, permettant au joueur d'envoyer au plateau le coup à jouer
-chan move_to_play = [0] of { Move }
-
-// Plateau européen par défaut pour commencer le travail
-byte first_hole_line = 2;
-byte first_hole_column = 3;
-byte number_pegs = 36;
-
-Move to_send_move;
-Move current_move;
-Hole hole;
+chan ready = [0] of { bool };
+chan move = [1] of { short, short, byte };
