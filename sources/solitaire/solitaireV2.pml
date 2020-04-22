@@ -53,6 +53,8 @@ byte first_hole_line = 2;
 byte first_hole_column = 3;
 byte number_pegs = 36;
 
+Move to_send_move;
+
 // Processus correspondant au Plateau
 // Ce processus doit:
 // - Attendre un triplet x, y, direction
@@ -176,7 +178,6 @@ proctype board() {
 // - Lire une case libre de free_holes
 // - Envoyer une direction au board.
 proctype player() {
-    Move to_send_move;
     Hole hole; byte line; byte column;
     wait_signal : ready?1;
     choose_hole : atomic{ free_holes?hole ->
@@ -214,4 +215,4 @@ init
 }
 
 /* Formule LTL exploitant les possibilités de spin 6 */
-ltl formulae { !<>(number_pegs == 1)}
+ltl formulae { !(<>(number_pegs == 1))}
