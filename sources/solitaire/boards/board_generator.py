@@ -151,7 +151,15 @@ def main():
     print("3.Allemand ")
     board_type = int(input())
 
-    size = int(input("Quelle taille de plateau voulez-vous ?: "))
+    size = int(input("Quelle taille de plateau voulez-vous (multiple de 3 impair) ?: "))
+
+    if not size & 1:
+        print("Taille paire, erreur")
+        sys.exit(1)
+
+    if size % 3 != 0:
+        print("Taille non conforme")
+        sys.exit(1)
 
     if board_type == 1:
         board = generate_european_board(size)
@@ -164,7 +172,7 @@ def main():
         sys.exit(1)
 
     print_board(board)
-    write_board("../solitairePrototype.pml", board)
+    #write_board("../solitairePrototype.pml", board)
     print("Programme généré")
 
 if __name__ == '__main__':
