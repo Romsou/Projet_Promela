@@ -43,14 +43,14 @@
 Le présent document est un rapport écrit à l'issue du projet de fin d'année d'introduction à la vérification. Il a été rédigé par M.Adrien Mollet et M.Romain Soumard à l'université d'Aix-Marseille durant l'année scolaire 2019-2020.
 Le but de ce projet consistait en la résolution de deux exercices:
 \begin{itemize}
-\item Exercice 1:  Trouver la plus courte solution au problème du berger.
+\item Exercice 1: Trouver la plus courte solution au problème du berger.
 \item Exercice 2: Modélisation du jeu du solitaire à l'aide du langage Promela.
 \end{itemize}
 Les sections suivantes présenteront brièvement l'organisation du travail et la résolution de chaque exercice.
 
 \section{Organisation du travail}
 
-Le travail a été séparé en deux groupes. M.Soumard s'est chargé de l'exercice 1 tandis que M.Mollet s'est chargé de l'exercice 2. Le travail s'est fait via GitHub. Une fois les exercices terminés, une dernière session de travail s'est tenue afin d'harmoniser le rendu, nettoyer le code, et rajouter des script bash faisant office de makefile afin de faciliter la correction.
+Le travail a été séparé en deux groupes. M. Soumard s'est chargé de l'exercice 1 tandis que M. Mollet s'est chargé de l'exercice 2. Le travail s'est fait via GitHub. Une fois les exercices terminés, une dernière session de travail s'est tenue afin d'harmoniser le rendu, nettoyer le code, et rajouter des script bash faisant office de makefile afin de faciliter la correction.
 
 \section{Exercice 1: Problème du berger}
 
@@ -94,8 +94,42 @@ Enfin, une partie de la modélisation que nous avons gardé (mais modifié plus 
 
 Dans l'ensemble, cette première modélisation du problème fut plutôt instinctive et satisfaisant si on ne considère pas de formule LTL à vérifier, dans le sens où le "jeu" se déroule tout de même. Néanmoins, l'utilisation d'un processus par case est une grosse erreur menant à de nombreux soucis dès lors que l'on utilise pan.
 
-\subsubsection{Deuxième jet}
+Vous pouvez retrouver le code de cette première approche dans le fichier "solitaireV1.pml".
 
+\subsubsection{Deuxième, troisième et quatrième jets}
 
+Nous avons décidé de repartir du modèle précédent mais en tentant une autre approche.
+
+Nous avons conservé l'idée de matrice, mais nous avons changé le principal problème du modèle précédent : la gestion des cases et des coups jouables. Nous avons migré du principe d'un processus par case, un processus player et un processus board vers une approche à seulement deux processus : board et player.
+
+Le processus player est chargé d'attendre un signal du board par un channel rendez-vous, de récupérer une case vide dans le channel des cases vides, puis de générer un coup jouable de manière non déterministe. Si aucun coup n'est jouable il replace la case libre dans le channel des cases libres et en sélectionne une autre, et ce jusqu'à générer un mouvement valide. Il envoie ensuite ledit mouvement dans un channel de coup à jouer puis recommence le cycle en attendant un signal du plateau. Le player s'arrête lorsqu'une case libre est sélectionné trois fois sans être jouée.
+
+Le plateau quant à lui initialise les bonnes valeurs pour le plateau, place la première case libre dans le channel adéquat puis attend un mouvement envoyé par le player. Lorsqu'il reçoit un coup, board le joue, modifiant le plateau en conséquence, décrémentant le nombre de pions restants et ajoutant les cases nouvellements libérées au bon channel. Il recommence ensuite son cycle en attendant un nouveau coup à jouer.
+
+Nous avons regroupé dans cette section les versions 2, 3 et 4 car le modèle est sensiblement le même. La version 4 n'est qu'une réécriture plus propre de la version 2, et souffre des mêmes problèmes (voir plus loin). La version 3 quant à elle est plus particulière. En effet plutôt que de rendre impossible la génération de coups interdits directement dans le modèle, nous avons essayé (sans succès) d'utiliser une formule LTL à cet effet.
+Les différentes versions sont trouvables respectivements sous les noms "solitaireV2.pml", "solitaireV3.pml" et "solitaireV4.pml".
+
+\subsubsection{Problème récurrent}
+
+Malgré nos différentes approches et modélisations, un problème est resté et nous n'avons pas réussi à le corriger. Lors de l'exécution de pan pour chercher une solution au jeu, la mémoire vive est à chaque fois saturée et le calcul ne donne pas de .trail montrant une résolution du jeu.
+
+Ce problème peut être dû a deux élements :
+\begin{itemize}
+\item Le modèle n'est pas assez contraint par notre formule LTL. En effet, !(<>(number_pegs == 1)) n'est peut être pas suffisant à pan pour élaguer suffisamment l'arbre des possibilités.
+\item Notre modèle est trop complexe et comprend trop d'opérations, saturant l'algorithme de calcul de pan.
+\end{itemize}
+Nous avons essayé de plus contraindre le modèle dans solitaireV3 et nous avons essayé de simplifier dans solitaireV2 et solitaireV4 mais rien n'y fait, impossible d'avoir une résolution du jeu.
+
+\subsection{Gestion d'autres plateaux}
+
+Conformément au sujet, nous avons réalisé un script ("board_generator.py") permettant de choisir le type de plateau et de générer le programme Promela adéquat. Il est possible de choisir un plateau européen, anglais ou allemand et d'en choisir la taille.
+
+Au vu des problèmes de résolution de notre solitaire dans sa version de base, nous n'avons évidemment pas pu tester la résolution sur des plateaux plus grands. Néanmoins nous avons tout de même tenu à faire le script permettant de faire cette partie du projet.
+
+Nous vous renvoyons maintenant au README pour le fonctionnement de notre projet.
+
+\section{Conclusion}
+
+En conclusion, nous aimerions mentionner que c'était un projet très intéressant et instructif à effectuer. Découvrir la vérification et les élements essentiels de cette branche de l'informatique fut très enrichissant. Néanmoins les outils spin et surtout Promela opérants dans un paradigme peu familier nous ont parfois posé des difficultés, surtout au niveau conception/modélisation (en témoigne notre modèle du solitaire dont pan ne parvient pas à tirer de solution satisfaisant notre formule LTL). Malgré nos accrochages avec le langage et le logiciel utilisés, ce fut un très bon projet que nous sommes ravis d'avoir réalisé.
 
 \end{document}
