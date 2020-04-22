@@ -111,6 +111,7 @@ def write_board(filename, board):
 
     with open(filename, "w") as program:
         program.write(header_file.read() + "\n")
+        program.write("#define BOARD_SIZE {}\n".format(len(board)-2))
         program.write("chan free_slot = [{}] of {{ short, short }};\n".format(number_of_pegs))
         program.write("int pegs = {};\n\n".format(number_of_pegs))
         program.write("typedef Matrix {{\n\tbyte col[{}] = 1 \n}}; \n\n".format(len(board)))

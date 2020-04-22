@@ -4,7 +4,7 @@ file=generated_solitaire.pml
 
 compile() {
     spin -a ${file}
-    gcc -DNOREDUCE -DMA=272 -DMEMLIM=4096 -DVECTORSZ=2048 pan.c -o pan
+    gcc -DNOREDUCE -DMA=272 -DVECTORSZ=2048 pan.c -o pan
     ./pan -a -i
 }
 
@@ -37,7 +37,7 @@ MSC() {
 }
 
 help() {
-    echo "Usage: $0 [-c] [-t] [-m] [-d]"
+    echo "Usage: $0 [-c] [-t] [-g] [-m] [-d]"
     echo
     echo "-c    Produce the verifier and compile pan before attempting to generate a trail"
     echo "-t    Replay the trail with spin -p -t ${file}"

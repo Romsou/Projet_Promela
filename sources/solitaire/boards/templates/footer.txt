@@ -26,23 +26,23 @@ start:
             pegs--;
 
 
-        ::  ((x + 2 < 7) && (direction == RIGHT))
+        ::  ((x + 2 < BOARD_SIZE) && (direction == RIGHT))
             -> (((row[y].col[x] == 0)     && (row[y].col[x + 2] == 1)     && (row[y].col[x + 1] == 1)))
             -> printf("Playing [%d,%d] RIGHT\n",x,y); row[y].col[x + 2] = 0; row[y].col[x + 1] = 0; free_slot!(x + 2),y; free_slot!(x + 1),y;
             pegs--;
 
-        ::  ((x + 2 < 7) && (direction == RIGHT))
+        ::  ((x + 2 < BOARD_SIZE) && (direction == RIGHT))
             -> (((row[y].col[x] == 0)     && (row[y].col[x + 2] == 1)     && (row[y].col[x + 1] == 1)))
             -> printf("Playing [%d,%d] RIGHT\n",x,y); row[y].col[x + 2] = 0; row[y].col[x + 1] = 0; free_slot!(x + 1),y; free_slot!(x + 2),y;
             pegs--;
 
 
-        ::  ((y + 2 < 7) && (direction == DOWN))
+        ::  ((y + 2 < BOARD_SIZE) && (direction == DOWN))
             -> ((row[y].col[x] == 0)    && (row[y + 2].col[x] == 1)     && (row[y + 1].col[x] == 1))
             -> printf("Playing [%d,%d] DOWN\n",x,y); row[y + 2].col[x] = 0; row[y + 1].col[x] = 0; free_slot!x,(y + 2); free_slot!x,(y + 1);
             pegs--;
 
-        ::  ((y + 2 < 7) && (direction == DOWN))
+        ::  ((y + 2 < BOARD_SIZE) && (direction == DOWN))
             -> ((row[y].col[x] == 0)    && (row[y + 2].col[x] == 1)     && (row[y + 1].col[x] == 1))
             -> printf("Playing [%d,%d] DOWN\n",x,y); row[y + 2].col[x] = 0; row[y + 1].col[x] = 0; free_slot!x,(y + 1); free_slot!x,(y + 2);
             pegs--;
