@@ -64,4 +64,4 @@ effacés avant d'avoir été utilisés.
 
 ## Lien du dépôt GitHub
 
-https://github.com/Romsou/Projet_Promela/
+https://github.com/Romsou/Projet_Promela
