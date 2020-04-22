@@ -36,21 +36,34 @@ MSC() {
     spin -c -t ${file}
 }
 
+proof_of_concept() {
+  cd proof_of_concept
+  file=proof_of_concept_solitaire.pml
+  compile
+  test
+  rm pan*
+  rm _spin_nvr.tmp
+  cd ..
+  file=generated_solitaire.pml
+}
+
 help() {
-    echo "Usage: $0 [-c] [-t] [-g] [-m] [-d]"
+    echo "Usage: $0 [-c] [-t] [-g] [-m] [-p] [-d]"
     echo
     echo "-c    Produce the verifier and compile pan before attempting to generate a trail"
     echo "-t    Replay the trail with spin -p -t ${file}"
     echo "-g    Generate a promela program by using the python script contained in boards"
     echo "-m    Print MSC (Message Sequence Chart)"
+    echo "-p    Produce verifier, compile pan, produce trail and play it for \"proof_of_concept_solitaire.pml\""
     echo "-d    Clean pan and trail files"
 }
 
-while getopts "ctmdg" option; do
+while getopts "ctmdpg" option; do
         case $option in
             c) compile ;;
             t) test ;;
             g) generate;;
+            p) proof_of_concept ;;
             d) clean ;;
             m) MSC ;;
             *) help ; exit 1 ;;
