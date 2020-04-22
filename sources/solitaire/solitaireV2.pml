@@ -215,7 +215,4 @@ init
 }
 
 /* Formule LTL exploitant les possibilités de spin 6 */
-ltl formulae { ((to_send_move.direction == UP -> (matrix[to_send_move.line_number-2].column[to_send_move.column_number] == 1 && matrix[to_send_move.line_number-1].column[to_send_move.column_number] == 1)) &&
-                  (to_send_move.direction == DOWN -> (matrix[to_send_move.line_number+2].column[to_send_move.column_number] == 1 && matrix[to_send_move.line_number+1].column[to_send_move.column_number] == 1)) &&
-                  (to_send_move.direction == LEFT -> (matrix[to_send_move.line_number].column[to_send_move.column_number-2] == 1 && matrix[to_send_move.line_number].column[to_send_move.column_number-1] == 1)) &&
-                  (to_send_move.direction == RIGHT -> (matrix[to_send_move.line_number].column[to_send_move.column_number+2] == 1 && matrix[to_send_move.line_number].column[to_send_move.column_number+1] == 1)))U((number_pegs == 1))}
+ltl formulae { !(<>(number_pegs == 1))}
