@@ -29,6 +29,11 @@ paramètres décrivant l'opération à effectuer.
 ./makefile_[nom].sh -g
 ```
 
+**Pour générer un vérificateur, compiler pan, générer et jouer la trace "Preuve de concept":**
+```
+./makefile_[nom].sh -p
+```
+
 **Pour afficher le MSC:**
 ```
 ./makefile_[nom].sh -m
