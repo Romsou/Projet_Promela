@@ -75,10 +75,10 @@ proctype player() {
     short y;
       printf("Player start\n");
         do
-        :: atomic {free_slot?x,y; move!x,y,UP; /*printf("Move send [%d,%d] UP",y,x);*/ ready?1;}
-        :: atomic {free_slot?x,y; move!x,y,LEFT; /*printf("Move send [%d,%d] LEFT",y,x);*/ ready?1;}
-        :: atomic {free_slot?x,y; move!x,y,DOWN; /*printf("Move send [%d,%d] DOWN",y,x);*/ ready?1;}
-        :: atomic {free_slot?x,y; move!x,y,RIGHT; /*printf("Move send [%d,%d] RIGHT",y,x);*/ ready?1;}
+        :: atomic {free_slot?x,y; move!x,y,UP; ready?1;}
+        :: atomic {free_slot?x,y; move!x,y,LEFT; ready?1;}
+        :: atomic {free_slot?x,y; move!x,y,DOWN; ready?1;}
+        :: atomic {free_slot?x,y; move!x,y,RIGHT; ready?1;}
         od
 };
 

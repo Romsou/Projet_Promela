@@ -101,9 +101,10 @@ def generate_rectangle(board: list, width: int, height: int, coord: Coord) -> li
 
 ######################## File write ########################
 
+
 def write_board(filename, board):
-    header_file = open("../templates/header.txt", "r")
-    footer_file = open("../templates/footer.txt", "r")
+    header_file = open("templates/header.txt", "r")
+    footer_file = open("templates/footer.txt", "r")
 
     with open(filename, "w") as program:
         program.write(header_file.read() + "\n\n")
@@ -128,32 +129,6 @@ def write_board(filename, board):
 ######################## Misc ########################
 
 
-def rotate(board, size, matrix):
-        middle = math.floor(size / 2)
-        half_square_size = int(size / 6)
-
-        for y in range(middle - half_square_size, middle + half_square_size + 1):
-            for x in range(1, size - 1):
-                if board[y][x] == 1:
-                    old_x = x
-                    old_y = y
-
-                    x -= middle
-                    y -= middle
-
-                    x = math.ceil(x * matrix[0][0] + y * matrix[1][0]) + middle
-                    y = math.ceil((old_x - middle) * matrix[0][1] + y * matrix[1][1]) + middle
-
-                    print(x, y)
-                    board[y][x] = 1
-                    print(board[y][x])
-
-                    x = old_x
-                    y = old_y
-
-        return board
-
-
 def print_board(board: list):
     for line in board:
         for x in line:
@@ -171,10 +146,34 @@ def check_board_size_is_odd(size: int):
 
 
 def main():
-    board = generate_european_board(9)
-    write_board("../solitairePrototype.pml", board)
-    print_board(board)
+    print("Quel type de plateau voulez-vous générer ?: ")
+    print("1.Européen \t\t 2.Anglais")
+    print("3.Allemand ")
+    board_type = int(input())
 
+    size = int(input("Quelle taille de plateau voulez-vous (multiple de 3 impair) ?: "))
+
+    if not size & 1:
+        print("Taille paire, erreur")
+        sys.exit(1)
+
+    if size % 3 != 0:
+        print("Taille non conforme")
+        sys.exit(1)
+
+    if board_type == 1:
+        board = generate_european_board(size)
+    elif board_type == 2:
+        board = generate_english_board(size)
+    elif board_type == 3:
+        board = generate_german_board(size)
+    else:
+        print("Type de plateau inexistant")
+        sys.exit(1)
+
+    print_board(board)
+    #write_board("../solitairePrototype.pml", board)
+    print("Programme généré")
 
 if __name__ == '__main__':
     main()
