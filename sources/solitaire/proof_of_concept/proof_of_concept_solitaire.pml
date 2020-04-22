@@ -7,12 +7,13 @@
 chan ready = [0] of { bool };
 chan move = [1] of { short, short, byte };
 
+#define BOARD_SIZE 7
 chan free_slot = [36] of { short, short };
 int pegs = 36;
 
 typedef Matrix {
-	byte col[9] = 1 
-}; 
+	byte col[9] = 1
+};
 
 Matrix row[9];
 
@@ -136,23 +137,23 @@ start:
             pegs--;
 
 
-        ::  ((x + 2 < 7) && (direction == RIGHT))
+        ::  ((x + 2 < BOARD_SIZE) && (direction == RIGHT))
             -> (((row[y].col[x] == 0)     && (row[y].col[x + 2] == 1)     && (row[y].col[x + 1] == 1)))
             -> printf("Playing [%d,%d] RIGHT\n",x,y); row[y].col[x + 2] = 0; row[y].col[x + 1] = 0; free_slot!(x + 2),y; free_slot!(x + 1),y;
             pegs--;
 
-        ::  ((x + 2 < 7) && (direction == RIGHT))
+        ::  ((x + 2 < BOARD_SIZE) && (direction == RIGHT))
             -> (((row[y].col[x] == 0)     && (row[y].col[x + 2] == 1)     && (row[y].col[x + 1] == 1)))
             -> printf("Playing [%d,%d] RIGHT\n",x,y); row[y].col[x + 2] = 0; row[y].col[x + 1] = 0; free_slot!(x + 1),y; free_slot!(x + 2),y;
             pegs--;
 
 
-        ::  ((y + 2 < 7) && (direction == DOWN))
+        ::  ((y + 2 < BOARD_SIZE) && (direction == DOWN))
             -> ((row[y].col[x] == 0)    && (row[y + 2].col[x] == 1)     && (row[y + 1].col[x] == 1))
             -> printf("Playing [%d,%d] DOWN\n",x,y); row[y + 2].col[x] = 0; row[y + 1].col[x] = 0; free_slot!x,(y + 2); free_slot!x,(y + 1);
             pegs--;
 
-        ::  ((y + 2 < 7) && (direction == DOWN))
+        ::  ((y + 2 < BOARD_SIZE) && (direction == DOWN))
             -> ((row[y].col[x] == 0)    && (row[y + 2].col[x] == 1)     && (row[y + 1].col[x] == 1))
             -> printf("Playing [%d,%d] DOWN\n",x,y); row[y + 2].col[x] = 0; row[y + 1].col[x] = 0; free_slot!x,(y + 1); free_slot!x,(y + 2);
             pegs--;
@@ -193,6 +194,4 @@ proctype player() {
     od
 };
 
-ltl formulae { !(<> (pegs == 1)) }
-
-
+ltl formulae { !(<> (pegs == 32)) }
