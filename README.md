@@ -24,6 +24,11 @@ paramètres décrivant l'opération à effectuer.
 ./makefile_[nom].sh -t
 ```
 
+**Pour générer un programme promela avec un plateau de la taille voulue:**
+```
+./makefile_[nom].sh -g
+```
+
 **Pour afficher le MSC:**
 ```
 ./makefile_[nom].sh -m
