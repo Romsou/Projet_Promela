@@ -106,19 +106,23 @@ def write_board(filename, board):
     header_file = open("templates/header.txt", "r")
     footer_file = open("templates/footer.txt", "r")
 
+    number_of_pegs = count_pegs(board)
+    empty_slot_y, empty_slot_x = find_first_empty_slot(board)
+
     with open(filename, "w") as program:
-        program.write(header_file.read() + "\n\n")
-        program.write("typedef Matrix {{\n byte column[{}] = 1 \n}}; \n\n".format(len(board)))
-        program.write("Matrix matrix[{}];\n".format(len(board)))
+        program.write(header_file.read() + "\n")
+        program.write("chan free_slot = [{}] of {{ short, short }};\n".format(number_of_pegs))
+        program.write("int pegs = {};\n\n".format(number_of_pegs))
+        program.write("typedef Matrix {{\n\tbyte col[{}] = 1 \n}}; \n\n".format(len(board)))
+        program.write("Matrix row[{}];\n\n".format(len(board)))
 
-        program.write("proctype board() {\n atomic {\n")
-        program.write("to_send_move.line_number = 2;\n")
-        program.write("to_send_move.column_number = 2;\n")
-
+        program.write("init {\n ")
         for row in range(len(board)):
             for col in range(len(board[row])):
-                program.write("matrix[{}].column[{}] = {}\n".format(row, col, board[row][col]))
+                program.write("\trow[{}].col[{}] = {};\n".format(row, col, board[row][col]))
             program.write("\n")
+
+        program.write("\tfree_slot!{},{};\n".format(empty_slot_x, empty_slot_y))
 
         program.write(footer_file.read() + "\n\n")
 
@@ -127,6 +131,23 @@ def write_board(filename, board):
 
 
 ######################## Misc ########################
+
+
+def find_first_empty_slot(board):
+    for row in range(len(board)):
+        for col in range(len(board[row])):
+            if board[row][col] == 0:
+                return (row, col)
+    return -1, -1
+
+
+def count_pegs(board):
+    number_of_pegs = 0
+    for line in board:
+        for slot in line:
+            if slot == 1:
+                number_of_pegs += 1
+    return number_of_pegs
 
 
 def print_board(board: list):
@@ -172,7 +193,10 @@ def main():
         sys.exit(1)
 
     print_board(board)
-    #write_board("../solitairePrototype.pml", board)
+    print(type(board))
+    print(count_pegs(board))
+    print(find_first_empty_slot(board))
+    write_board("../generated_solitaire.pml", board)
     print("Programme généré")
 
 if __name__ == '__main__':
