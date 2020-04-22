@@ -103,8 +103,8 @@ def generate_rectangle(board: list, width: int, height: int, coord: Coord) -> li
 
 
 def write_board(filename, board):
-    header_file = open("../templates/header.txt", "r")
-    footer_file = open("../templates/footer.txt", "r")
+    header_file = open("templates/header.txt", "r")
+    footer_file = open("templates/footer.txt", "r")
 
     with open(filename, "w") as program:
         program.write(header_file.read() + "\n\n")
